@@ -14,6 +14,6 @@ tag: increment_version
 
 update: increment_version
 	@git add -A
-	@python3.10 scripts/version.py get && git commit -m "$VERSION"
+	@python3.10 scripts/version.py commit
 	@python3.10 scripts/version.py tag
 	@git push --tags

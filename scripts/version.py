@@ -87,6 +87,8 @@ def main() -> None:
         os.system(f"git push --tags")
     if action == "get":
         os.system("export VERSION=v" + str(version) + "")
+    if action == "commit":
+        os.system(f'git commit -m "Release v{version}"')
 
 
 if __name__ == "__main__":

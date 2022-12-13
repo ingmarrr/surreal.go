@@ -47,27 +47,16 @@ class Version:
             self.major += 1
 
 
-class FileType(enum.Enum):
-    TOML= "toml"
-    ENV= "env"
-
-
-def read_version(path: str, ty: FileType = FileType.ENV) -> Version:
+def read_version(path: str) -> Version:
     with open(path, "r") as f:
-        match ty:
-            case FileType.TOML:
-                temp = f.read().strip().split("=")[-1].strip().strip('"')
-                major, minor, patch = temp.split(".")
-                return Version(int(major), int(minor), int(patch))
-            case FileType.ENV:
-                temp = f.read().strip().split("$")[-1].strip("{").strip("}")
-                major, minor, patch = temp.split(".")
-                return Version(int(major), int(minor), int(patch))
+        temp = f.read().strip().split("$")[-1].strip("{").strip("}")
+        major, minor, patch = temp.split(".")
+        return Version(int(major), int(minor), int(patch))
 
 
 def write_version(path: str, version: Version) -> None:
     with open(path, "w") as f:
-        f.write(f'version = "{version}"')
+        f.write("VERSION=${" + str(version) + "}")
 
 
 def main() -> None:

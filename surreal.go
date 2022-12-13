@@ -1,19 +1,46 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"io"
+	"net/http"
 )
 
-type Foo struct {
-	Bar string `json:"bar"`
+type (
+	Response struct {
+		Time   string
+		Code   int
+		Result string
+	}
+
+	Client struct {
+		cl *http.Client
+	}
+)
+
+func (c *Client) Get(url string) (*Response, error) {
+	resp, err := c.cl.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	return &Response{
+		Time:   resp.Header.Get("Date"),
+		Code:   resp.StatusCode,
+		Result: resp.Status,
+	}, nil
 }
 
-func main() {
-	foo := Foo{Bar: "baz"}
-	fooStr, _ := json.Marshal(foo)
-	fmt.Println(string(fooStr))
+func (c *Client) Post(url string, bodyType string, body io.Reader) (*Response, error) {
+	resp, err := c.cl.Post(url, bodyType, body)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
 
-	json.Unmarshal(fooStr, &foo)
-	fmt.Println(foo)
+	return &Response{
+		Time:   resp.Header.Get("Date"),
+		Code:   resp.StatusCode,
+		Result: resp.Status,
+	}, nil
 }
